@@ -22,33 +22,25 @@ namespace Aurora.IdentityServer
 {
     public class IdentityServerDataSeedContributor : IDataSeedContributor, ITransientDependency
     {
-        private readonly IApiResourceRepository _apiResourceRepository;
-        private readonly IApiScopeRepository _apiScopeRepository;
-        private readonly IClientRepository _clientRepository;
-        private readonly IIdentityResourceDataSeeder _identityResourceDataSeeder;
-        private readonly IGuidGenerator _guidGenerator;
-        private readonly IPermissionDataSeeder _permissionDataSeeder;
         private readonly IConfiguration _configuration;
         private readonly ICurrentTenant _currentTenant;
+        private readonly IGuidGenerator _guidGenerator;
+        private readonly IClientRepository _clientRepository;
+        private readonly IApiScopeRepository _apiScopeRepository;
+        private readonly IPermissionDataSeeder _permissionDataSeeder;
+        private readonly IApiResourceRepository _apiResourceRepository;
+        private readonly IIdentityResourceDataSeeder _identityResourceDataSeeder;
 
-        public IdentityServerDataSeedContributor(
-            IClientRepository clientRepository,
-            IApiResourceRepository apiResourceRepository,
-            IApiScopeRepository apiScopeRepository,
-            IIdentityResourceDataSeeder identityResourceDataSeeder,
-            IGuidGenerator guidGenerator,
-            IPermissionDataSeeder permissionDataSeeder,
-            IConfiguration configuration,
-            ICurrentTenant currentTenant)
+        public IdentityServerDataSeedContributor(IConfiguration configuration, ICurrentTenant currentTenant, IGuidGenerator guidGenerator, IClientRepository clientRepository, IApiScopeRepository apiScopeRepository, IPermissionDataSeeder permissionDataSeeder, IApiResourceRepository apiResourceRepository, IIdentityResourceDataSeeder identityResourceDataSeeder)
         {
-            _clientRepository = clientRepository;
-            _apiResourceRepository = apiResourceRepository;
-            _apiScopeRepository = apiScopeRepository;
-            _identityResourceDataSeeder = identityResourceDataSeeder;
-            _guidGenerator = guidGenerator;
-            _permissionDataSeeder = permissionDataSeeder;
             _configuration = configuration;
             _currentTenant = currentTenant;
+            _guidGenerator = guidGenerator;
+            _clientRepository = clientRepository;
+            _apiScopeRepository = apiScopeRepository;
+            _permissionDataSeeder = permissionDataSeeder;
+            _apiResourceRepository = apiResourceRepository;
+            _identityResourceDataSeeder = identityResourceDataSeeder;
         }
 
         [UnitOfWork]
@@ -65,22 +57,15 @@ namespace Aurora.IdentityServer
 
         private async Task CreateApiScopesAsync()
         {
-            await CreateApiScopeAsync("Aurora");
+            await CreateApiScopeAsync("aurora-api");
+            await CreateApiScopeAsync("aurora-host-api");
         }
 
         private async Task CreateApiResourcesAsync()
         {
-            var commonApiUserClaims = new[]
-            {
-                "email",
-                "email_verified",
-                "name",
-                "phone_number",
-                "phone_number_verified",
-                "role"
-            };
-
-            await CreateApiResourceAsync("Aurora", commonApiUserClaims);
+            var commonApiUserClaims = new[] {"role"};
+            await CreateApiResourceAsync("aurora-api", commonApiUserClaims);
+            await CreateApiResourceAsync("aurora-host-api", commonApiUserClaims);
         }
 
         private async Task<ApiResource> CreateApiResourceAsync(string name, IEnumerable<string> claims)
@@ -88,14 +73,7 @@ namespace Aurora.IdentityServer
             var apiResource = await _apiResourceRepository.FindByNameAsync(name);
             if (apiResource == null)
             {
-                apiResource = await _apiResourceRepository.InsertAsync(
-                    new ApiResource(
-                        _guidGenerator.Create(),
-                        name,
-                        name + " API"
-                    ),
-                    autoSave: true
-                );
+                apiResource = await _apiResourceRepository.InsertAsync(new ApiResource(_guidGenerator.Create(), name, name), true);
             }
 
             foreach (var claim in claims)
@@ -114,14 +92,7 @@ namespace Aurora.IdentityServer
             var apiScope = await _apiScopeRepository.GetByNameAsync(name);
             if (apiScope == null)
             {
-                apiScope = await _apiScopeRepository.InsertAsync(
-                    new ApiScope(
-                        _guidGenerator.Create(),
-                        name,
-                        name + " API"
-                    ),
-                    autoSave: true
-                );
+                apiScope = await _apiScopeRepository.InsertAsync(new ApiScope(_guidGenerator.Create(), name, name), true);
             }
 
             return apiScope;
@@ -129,132 +100,47 @@ namespace Aurora.IdentityServer
 
         private async Task CreateClientsAsync()
         {
-            var commonScopes = new[]
-            {
-                "email",
-                "openid",
-                "profile",
-                "role",
-                "phone",
-                "address",
-                "Aurora"
-            };
+            var commonScopes = new[] {"openid", "profile"};
 
             var configurationSection = _configuration.GetSection("IdentityServer:Clients");
 
-            //Web Client
-            var webClientId = configurationSection["Aurora_Web:ClientId"];
-            if (!webClientId.IsNullOrWhiteSpace())
+            var auroraWebClientId = configurationSection["Aurora_Web:ClientId"];
+            var auroraWebClientSecret = configurationSection["Aurora_Web:ClientSecret"];
+            if (!auroraWebClientId.IsNullOrWhiteSpace() && !auroraWebClientSecret.IsNullOrWhiteSpace())
             {
-                var webClientRootUrl = configurationSection["Aurora_Web:RootUrl"].EnsureEndsWith('/');
-
-                /* Aurora_Web client is only needed if you created a tiered
-                 * solution. Otherwise, you can delete this client. */
-
-                await CreateClientAsync(
-                    name: webClientId,
-                    scopes: commonScopes,
-                    grantTypes: new[] { "hybrid" },
-                    secret: (configurationSection["Aurora_Web:ClientSecret"] ?? "1q2w3e*").Sha256(),
-                    redirectUri: $"{webClientRootUrl}signin-oidc",
-                    postLogoutRedirectUri: $"{webClientRootUrl}signout-callback-oidc",
-                    frontChannelLogoutUri: $"{webClientRootUrl}Account/FrontChannelLogout",
-                    corsOrigins: new[] { webClientRootUrl.RemovePostFix("/") }
-                );
+                var scopes = new List<string>(commonScopes) {"aurora-api"};
+                await CreateClientAsync(auroraWebClientId, "aurora web", scopes, GrantTypes.ResourceOwnerPassword, auroraWebClientSecret.Sha256());
             }
 
-            //Console Test / Angular Client
-            var consoleAndAngularClientId = configurationSection["Aurora_App:ClientId"];
-            if (!consoleAndAngularClientId.IsNullOrWhiteSpace())
+            var auroraHostWebClientId = configurationSection["Aurora_Host_Web:ClientId"];
+            var auroraHostWebClientSecret = configurationSection["Aurora_Host_Web:ClientSecret"];
+            if (!auroraHostWebClientId.IsNullOrWhiteSpace() && !auroraHostWebClientSecret.IsNullOrWhiteSpace())
             {
-                var webClientRootUrl = configurationSection["Aurora_App:RootUrl"]?.TrimEnd('/');
-
-                await CreateClientAsync(
-                    name: consoleAndAngularClientId,
-                    scopes: commonScopes,
-                    grantTypes: new[] { "password", "client_credentials", "authorization_code" },
-                    secret: (configurationSection["Aurora_App:ClientSecret"] ?? "1q2w3e*").Sha256(),
-                    requireClientSecret: false,
-                    redirectUri: webClientRootUrl,
-                    postLogoutRedirectUri: webClientRootUrl,
-                    corsOrigins: new[] { webClientRootUrl.RemovePostFix("/") }
-                );
-            }
-
-            // Blazor Client
-            var blazorClientId = configurationSection["Aurora_Blazor:ClientId"];
-            if (!blazorClientId.IsNullOrWhiteSpace())
-            {
-                var blazorRootUrl = configurationSection["Aurora_Blazor:RootUrl"].TrimEnd('/');
-
-                await CreateClientAsync(
-                    name: blazorClientId,
-                    scopes: commonScopes,
-                    grantTypes: new[] { "authorization_code" },
-                    secret: configurationSection["Aurora_Blazor:ClientSecret"]?.Sha256(),
-                    requireClientSecret: false,
-                    redirectUri: $"{blazorRootUrl}/authentication/login-callback",
-                    postLogoutRedirectUri: $"{blazorRootUrl}/authentication/logout-callback",
-                    corsOrigins: new[] { blazorRootUrl.RemovePostFix("/") }
-                );
-            }
-
-            // Swagger Client
-            var swaggerClientId = configurationSection["Aurora_Swagger:ClientId"];
-            if (!swaggerClientId.IsNullOrWhiteSpace())
-            {
-                var swaggerRootUrl = configurationSection["Aurora_Swagger:RootUrl"].TrimEnd('/');
-
-                await CreateClientAsync(
-                    name: swaggerClientId,
-                    scopes: commonScopes,
-                    grantTypes: new[] { "authorization_code" },
-                    secret: configurationSection["Aurora_Swagger:ClientSecret"]?.Sha256(),
-                    requireClientSecret: false,
-                    redirectUri: $"{swaggerRootUrl}/swagger/oauth2-redirect.html",
-                    corsOrigins: new[] { swaggerRootUrl.RemovePostFix("/") }
-                );
+                var scopes = new List<string>(commonScopes) {"aurora-host-api"};
+                await CreateClientAsync(auroraHostWebClientId, "aurora host web", scopes, GrantTypes.ResourceOwnerPassword, auroraHostWebClientSecret.Sha256());
             }
         }
 
-        private async Task<Client> CreateClientAsync(
-            string name,
-            IEnumerable<string> scopes,
-            IEnumerable<string> grantTypes,
-            string secret = null,
-            string redirectUri = null,
-            string postLogoutRedirectUri = null,
-            string frontChannelLogoutUri = null,
-            bool requireClientSecret = true,
-            bool requirePkce = false,
-            IEnumerable<string> permissions = null,
-            IEnumerable<string> corsOrigins = null)
+        private async Task<Client> CreateClientAsync(string id, string name, IEnumerable<string> scopes, IEnumerable<string> grantTypes, string secret = null, string redirectUri = null, string postLogoutRedirectUri = null, string frontChannelLogoutUri = null, bool requireClientSecret = true, bool requirePkce = false, IEnumerable<string> permissions = null, IEnumerable<string> corsOrigins = null)
         {
-            var client = await _clientRepository.FindByClientIdAsync(name);
+            var client = await _clientRepository.FindByClientIdAsync(id);
             if (client == null)
             {
-                client = await _clientRepository.InsertAsync(
-                    new Client(
-                        _guidGenerator.Create(),
-                        name
-                    )
-                    {
-                        ClientName = name,
-                        ProtocolType = "oidc",
-                        Description = name,
-                        AlwaysIncludeUserClaimsInIdToken = true,
-                        AllowOfflineAccess = true,
-                        AbsoluteRefreshTokenLifetime = 31536000, //365 days
-                        AccessTokenLifetime = 31536000, //365 days
-                        AuthorizationCodeLifetime = 300,
-                        IdentityTokenLifetime = 300,
-                        RequireConsent = false,
-                        FrontChannelLogoutUri = frontChannelLogoutUri,
-                        RequireClientSecret = requireClientSecret,
-                        RequirePkce = requirePkce
-                    },
-                    autoSave: true
-                );
+                client = await _clientRepository.InsertAsync(new Client(_guidGenerator.Create(), id)
+                {
+                    ClientName = name,
+                    ProtocolType = "oidc",
+                    AlwaysIncludeUserClaimsInIdToken = true,
+                    AllowOfflineAccess = true,
+                    AbsoluteRefreshTokenLifetime = 86400 * 3,
+                    AccessTokenLifetime = 86400,
+                    AuthorizationCodeLifetime = 300,
+                    IdentityTokenLifetime = 300,
+                    RequireConsent = false,
+                    FrontChannelLogoutUri = frontChannelLogoutUri,
+                    RequireClientSecret = requireClientSecret,
+                    RequirePkce = requirePkce
+                }, true);
             }
 
             foreach (var scope in scopes)
@@ -299,12 +185,7 @@ namespace Aurora.IdentityServer
 
             if (permissions != null)
             {
-                await _permissionDataSeeder.SeedAsync(
-                    ClientPermissionValueProvider.ProviderName,
-                    name,
-                    permissions,
-                    null
-                );
+                await _permissionDataSeeder.SeedAsync(ClientPermissionValueProvider.ProviderName, id, permissions);
             }
 
             if (corsOrigins != null)

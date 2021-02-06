@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp;
 using Volo.Abp.Authorization;
 using Volo.Abp.Autofac;
@@ -15,7 +16,7 @@ namespace Aurora
         typeof(AbpTestBaseModule),
         typeof(AbpAuthorizationModule),
         typeof(AuroraDomainModule)
-        )]
+    )]
     public class AuroraTestBaseModule : AbpModule
     {
         public override void PreConfigureServices(ServiceConfigurationContext context)
@@ -27,7 +28,7 @@ namespace Aurora
 
             PreConfigure<IIdentityServerBuilder>(identityServerBuilder =>
             {
-                identityServerBuilder.AddDeveloperSigningCredential(false, System.Guid.NewGuid().ToString());
+                identityServerBuilder.AddDeveloperSigningCredential(false, Guid.NewGuid().ToString());
             });
         }
 
@@ -50,12 +51,8 @@ namespace Aurora
         {
             AsyncHelper.RunSync(async () =>
             {
-                using (var scope = context.ServiceProvider.CreateScope())
-                {
-                    await scope.ServiceProvider
-                        .GetRequiredService<IDataSeeder>()
-                        .SeedAsync();
-                }
+                using var scope = context.ServiceProvider.CreateScope();
+                await scope.ServiceProvider.GetRequiredService<IDataSeeder>().SeedAsync();
             });
         }
     }

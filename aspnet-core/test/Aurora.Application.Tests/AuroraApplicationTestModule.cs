@@ -5,9 +5,8 @@ namespace Aurora
     [DependsOn(
         typeof(AuroraApplicationModule),
         typeof(AuroraDomainTestModule)
-        )]
+    )]
     public class AuroraApplicationTestModule : AbpModule
     {
-
     }
 }

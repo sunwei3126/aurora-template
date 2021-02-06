@@ -8,10 +8,7 @@ namespace Aurora.Permissions
     {
         public override void Define(IPermissionDefinitionContext context)
         {
-            var myGroup = context.AddGroup(AuroraPermissions.GroupName);
-
-            //Define your own permissions here. Example:
-            //myGroup.AddPermission(AuroraPermissions.MyPermission1, L("Permission:MyPermission1"));
+            var aurora = context.AddGroup(AuroraPermissions.GroupName);
         }
 
         private static LocalizableString L(string name)

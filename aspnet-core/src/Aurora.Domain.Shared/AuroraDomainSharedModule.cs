@@ -24,7 +24,7 @@ namespace Aurora
         typeof(AbpPermissionManagementDomainSharedModule),
         typeof(AbpSettingManagementDomainSharedModule),
         typeof(AbpTenantManagementDomainSharedModule)
-        )]
+    )]
     public class AuroraDomainSharedModule : AbpModule
     {
         public override void PreConfigureServices(ServiceConfigurationContext context)
@@ -43,7 +43,7 @@ namespace Aurora
             Configure<AbpLocalizationOptions>(options =>
             {
                 options.Resources
-                    .Add<AuroraResource>("en")
+                    .Add<AuroraResource>("zh-Hans")
                     .AddBaseTypes(typeof(AbpValidationResource))
                     .AddVirtualJson("/Localization/Aurora");
 

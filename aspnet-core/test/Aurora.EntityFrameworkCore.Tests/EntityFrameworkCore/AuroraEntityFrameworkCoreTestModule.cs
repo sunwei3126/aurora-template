@@ -14,7 +14,7 @@ namespace Aurora.EntityFrameworkCore
         typeof(AuroraEntityFrameworkCoreDbMigrationsModule),
         typeof(AuroraTestBaseModule),
         typeof(AbpEntityFrameworkCoreSqliteModule)
-        )]
+    )]
     public class AuroraEntityFrameworkCoreTestModule : AbpModule
     {
         private SqliteConnection _sqliteConnection;
@@ -51,10 +51,8 @@ namespace Aurora.EntityFrameworkCore
                 .UseSqlite(connection)
                 .Options;
 
-            using (var context = new AuroraMigrationsDbContext(options))
-            {
-                context.GetService<IRelationalDatabaseCreator>().CreateTables();
-            }
+            using var context = new AuroraMigrationsDbContext(options);
+            context.GetService<IRelationalDatabaseCreator>().CreateTables();
 
             return connection;
         }

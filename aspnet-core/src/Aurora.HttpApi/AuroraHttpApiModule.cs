@@ -1,23 +1,15 @@
-﻿using Localization.Resources.AbpUi;
-using Aurora.Localization;
-using Volo.Abp.Account;
-using Volo.Abp.FeatureManagement;
-using Volo.Abp.Identity;
+﻿using Aurora.Localization;
+using Localization.Resources.AbpUi;
+using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
-using Volo.Abp.PermissionManagement.HttpApi;
-using Volo.Abp.TenantManagement;
 
 namespace Aurora
 {
     [DependsOn(
         typeof(AuroraApplicationContractsModule),
-        typeof(AbpAccountHttpApiModule),
-        typeof(AbpIdentityHttpApiModule),
-        typeof(AbpPermissionManagementHttpApiModule),
-        typeof(AbpTenantManagementHttpApiModule),
-        typeof(AbpFeatureManagementHttpApiModule)
-        )]
+        typeof(AbpAspNetCoreMvcModule)
+    )]
     public class AuroraHttpApiModule : AbpModule
     {
         public override void ConfigureServices(ServiceConfigurationContext context)
@@ -29,11 +21,7 @@ namespace Aurora
         {
             Configure<AbpLocalizationOptions>(options =>
             {
-                options.Resources
-                    .Get<AuroraResource>()
-                    .AddBaseTypes(
-                        typeof(AbpUiResource)
-                    );
+                options.Resources.Get<AuroraResource>().AddBaseTypes(typeof(AbpUiResource));
             });
         }
     }

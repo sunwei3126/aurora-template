@@ -9,5 +9,10 @@ namespace Aurora.Controllers
         {
             return Redirect("~/swagger");
         }
+
+        public ActionResult Config()
+        {
+            return Redirect("/.well-known/openid-configuration");
+        }
     }
 }

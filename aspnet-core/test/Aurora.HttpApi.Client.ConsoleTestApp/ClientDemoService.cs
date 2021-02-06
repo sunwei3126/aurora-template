@@ -1,26 +1,23 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Aurora.Services.Hosts.Demos;
 using Volo.Abp.DependencyInjection;
-using Volo.Abp.Identity;
 
 namespace Aurora.HttpApi.Client.ConsoleTestApp
 {
     public class ClientDemoService : ITransientDependency
     {
-        private readonly IProfileAppService _profileAppService;
+        private readonly IDemoAppService _demoAppService;
 
-        public ClientDemoService(IProfileAppService profileAppService)
+        public ClientDemoService(IDemoAppService demoAppService)
         {
-            _profileAppService = profileAppService;
+            _demoAppService = demoAppService;
         }
 
         public async Task RunAsync()
         {
-            var output = await _profileAppService.GetAsync();
-            Console.WriteLine($"UserName : {output.UserName}");
-            Console.WriteLine($"Email    : {output.Email}");
-            Console.WriteLine($"Name     : {output.Name}");
-            Console.WriteLine($"Surname  : {output.Surname}");
+            await _demoAppService.TestAsync();
+            Console.WriteLine("Call Host DemoAppService TestAsync Success");
         }
     }
 }

@@ -8,14 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="appsettings.json">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <PackageReference Include="Volo.Abp.Autofac" Version="4.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,16 +20,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.Autofac" Version="4.2.0" />
     <ProjectReference Include="..\Aurora.Application.Contracts\Aurora.Application.Contracts.csproj" />
     <ProjectReference Include="..\Aurora.EntityFrameworkCore.DbMigrations\Aurora.EntityFrameworkCore.DbMigrations.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <Compile Remove="Logs\**" />
-    <Content Remove="Logs\**" />
-    <EmbeddedResource Remove="Logs\**" />
-    <None Remove="Logs\**" />
+    <None Remove="appsettings.json" />
+    <Content Include="appsettings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

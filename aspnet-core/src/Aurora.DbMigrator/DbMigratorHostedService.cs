@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Aurora.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Aurora.Data;
 using Serilog;
 using Volo.Abp;
 
@@ -19,25 +19,24 @@ namespace Aurora.DbMigrator
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            using (var application = AbpApplicationFactory.Create<AuroraDbMigratorModule>(options =>
+            using var application = AbpApplicationFactory.Create<AuroraDbMigratorModule>(options =>
             {
                 options.UseAutofac();
                 options.Services.AddLogging(c => c.AddSerilog());
-            }))
-            {
-                application.Initialize();
+            });
 
-                await application
-                    .ServiceProvider
-                    .GetRequiredService<AuroraDbMigrationService>()
-                    .MigrateAsync();
+            application.Initialize();
 
-                application.Shutdown();
+            await application.ServiceProvider.GetRequiredService<AuroraDbMigrationService>().MigrateAsync();
 
-                _hostApplicationLifetime.StopApplication();
-            }
+            application.Shutdown();
+
+            _hostApplicationLifetime.StopApplication();
         }
 
-        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

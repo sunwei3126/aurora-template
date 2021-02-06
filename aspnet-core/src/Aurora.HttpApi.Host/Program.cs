@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Aurora
 {
@@ -11,18 +12,14 @@ namespace Aurora
         public static int Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-#if DEBUG
-                .MinimumLevel.Debug()
-#else
                 .MinimumLevel.Information()
-#endif
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .MinimumLevel.Override("Volo.Abp", LogEventLevel.Warning)
+                .MinimumLevel.Override("IdentityServer4", LogEventLevel.Warning)
                 .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.AspNetCore.DataProtection", LogEventLevel.Warning)
                 .Enrich.FromLogContext()
-                .WriteTo.Async(c => c.File("Logs/logs.txt"))
-#if DEBUG
-                .WriteTo.Async(c => c.Console())
-#endif
+                .WriteTo.Async(c => c.File("Logs/.txt", rollingInterval: RollingInterval.Day))
+                .WriteTo.Async(c => c.Console(theme: AnsiConsoleTheme.Code))
                 .CreateLogger();
 
             try
@@ -42,13 +39,15 @@ namespace Aurora
             }
         }
 
-        internal static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+        private static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
                 })
                 .UseAutofac()
                 .UseSerilog();
+        }
     }
 }

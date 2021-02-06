@@ -1,9 +1,6 @@
-﻿using Volo.Abp;
-
-namespace Aurora.EntityFrameworkCore
+﻿namespace Aurora.EntityFrameworkCore
 {
-    public abstract class AuroraEntityFrameworkCoreTestBase : AuroraTestBase<AuroraEntityFrameworkCoreTestModule> 
+    public abstract class AuroraEntityFrameworkCoreTestBase : AuroraTestBase<AuroraEntityFrameworkCoreTestModule>
     {
-
     }
 }

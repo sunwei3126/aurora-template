@@ -19,20 +19,16 @@ namespace Aurora.Data
         public ILogger<AuroraDbMigrationService> Logger { get; set; }
 
         private readonly IDataSeeder _dataSeeder;
-        private readonly IEnumerable<IAuroraDbSchemaMigrator> _dbSchemaMigrators;
-        private readonly ITenantRepository _tenantRepository;
         private readonly ICurrentTenant _currentTenant;
+        private readonly ITenantRepository _tenantRepository;
+        private readonly IEnumerable<IAuroraDbSchemaMigrator> _dbSchemaMigrators;
 
-        public AuroraDbMigrationService(
-            IDataSeeder dataSeeder,
-            IEnumerable<IAuroraDbSchemaMigrator> dbSchemaMigrators,
-            ITenantRepository tenantRepository,
-            ICurrentTenant currentTenant)
+        public AuroraDbMigrationService(IDataSeeder dataSeeder, ICurrentTenant currentTenant, ITenantRepository tenantRepository, IEnumerable<IAuroraDbSchemaMigrator> dbSchemaMigrators)
         {
             _dataSeeder = dataSeeder;
-            _dbSchemaMigrators = dbSchemaMigrators;
-            _tenantRepository = tenantRepository;
             _currentTenant = currentTenant;
+            _tenantRepository = tenantRepository;
+            _dbSchemaMigrators = dbSchemaMigrators;
 
             Logger = NullLogger<AuroraDbMigrationService>.Instance;
         }
@@ -57,7 +53,7 @@ namespace Aurora.Data
             await MigrateDatabaseSchemaAsync();
             await SeedDataAsync();
 
-            Logger.LogInformation($"Successfully completed host database migrations.");
+            Logger.LogInformation("Successfully completed host database migrations.");
 
             var tenants = await _tenantRepository.GetListAsync(includeDetails: true);
 
@@ -68,9 +64,7 @@ namespace Aurora.Data
                 {
                     if (tenant.ConnectionStrings.Any())
                     {
-                        var tenantConnectionStrings = tenant.ConnectionStrings
-                            .Select(x => x.Value)
-                            .ToList();
+                        var tenantConnectionStrings = tenant.ConnectionStrings.Select(x => x.Value).ToList();
 
                         if (!migratedDatabaseSchemas.IsSupersetOf(tenantConnectionStrings))
                         {
@@ -92,8 +86,7 @@ namespace Aurora.Data
 
         private async Task MigrateDatabaseSchemaAsync(Tenant tenant = null)
         {
-            Logger.LogInformation(
-                $"Migrating schema for {(tenant == null ? "host" : tenant.Name + " tenant")} database...");
+            Logger.LogInformation($"Migrating schema for {(tenant == null ? "host" : tenant.Name + " tenant")} database...");
 
             foreach (var migrator in _dbSchemaMigrators)
             {
@@ -140,9 +133,7 @@ namespace Aurora.Data
                 fileName = "cmd.exe";
             }
 
-            var procStartInfo = new ProcessStartInfo( fileName,
-                $"{argumentPrefix} \"abp create-migration-and-run-migrator \"{GetDbMigrationsProjectFolderPath()}\"\""
-            );
+            var procStartInfo = new ProcessStartInfo(fileName, $"{argumentPrefix} \"abp create-migration-and-run-migrator \"{GetDbMigrationsProjectFolderPath()}\"\"");
 
             try
             {
@@ -165,8 +156,7 @@ namespace Aurora.Data
 
             var srcDirectoryPath = Path.Combine(slnDirectoryPath, "src");
 
-            return Directory.GetDirectories(srcDirectoryPath)
-                .FirstOrDefault(d => d.EndsWith(".DbMigrations"));
+            return Directory.GetDirectories(srcDirectoryPath).FirstOrDefault(d => d.EndsWith(".DbMigrations"));
         }
 
         private string GetSolutionDirectoryPath()

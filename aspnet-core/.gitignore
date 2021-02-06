@@ -140,8 +140,6 @@ publish/
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml
-# TODO: Comment the next line if you want to checkin your web deploy settings
-# but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
 *.publishproj
 
@@ -252,9 +250,5 @@ paket-files/
 *.sln.iml
 
 # Aurora
-src/Aurora.Web/Logs/*
-src/Aurora.Web.Host/Logs/*
-src/Aurora.IdentityServer/Logs/*
-src/Aurora.HttpApi.Host/Logs/*
-src/Aurora.HttpApi.Host/Logs/*
 src/Aurora.DbMigrator/Logs/*
+src/Aurora.HttpApi.Host/Logs/*

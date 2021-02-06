@@ -9,7 +9,7 @@ namespace Aurora.DbMigrator
         typeof(AbpAutofacModule),
         typeof(AuroraEntityFrameworkCoreDbMigrationsModule),
         typeof(AuroraApplicationContractsModule)
-        )]
+    )]
     public class AuroraDbMigratorModule : AbpModule
     {
         public override void ConfigureServices(ServiceConfigurationContext context)

@@ -5,8 +5,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace Aurora.EntityFrameworkCore
 {
-    /* This class is needed for EF Core console commands
-     * (like Add-Migration and Update-Database commands) */
     public class AuroraMigrationsDbContextFactory : IDesignTimeDbContextFactory<AuroraMigrationsDbContext>
     {
         public AuroraMigrationsDbContext CreateDbContext(string[] args)
@@ -25,7 +23,7 @@ namespace Aurora.EntityFrameworkCore
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../Aurora.DbMigrator/"))
-                .AddJsonFile("appsettings.json", optional: false);
+                .AddJsonFile("appsettings.json", false);
 
             return builder.Build();
         }

@@ -24,7 +24,7 @@ namespace Aurora.EntityFrameworkCore
         typeof(AbpAuditLoggingEntityFrameworkCoreModule),
         typeof(AbpTenantManagementEntityFrameworkCoreModule),
         typeof(AbpFeatureManagementEntityFrameworkCoreModule)
-        )]
+    )]
     public class AuroraEntityFrameworkCoreModule : AbpModule
     {
         public override void PreConfigureServices(ServiceConfigurationContext context)
@@ -36,15 +36,11 @@ namespace Aurora.EntityFrameworkCore
         {
             context.Services.AddAbpDbContext<AuroraDbContext>(options =>
             {
-                /* Remove "includeAllEntities: true" to create
-                 * default repositories only for aggregate roots */
-                options.AddDefaultRepositories(includeAllEntities: true);
+                options.AddDefaultRepositories(true);
             });
 
             Configure<AbpDbContextOptions>(options =>
             {
-                /* The main point to change your DBMS.
-                 * See also AuroraMigrationsDbContextFactory for EF Core tooling. */
                 options.UseNpgsql();
             });
         }

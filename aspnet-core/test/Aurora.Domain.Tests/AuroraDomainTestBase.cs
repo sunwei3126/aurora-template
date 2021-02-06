@@ -1,7 +1,6 @@
 ﻿namespace Aurora
 {
-    public abstract class AuroraDomainTestBase : AuroraTestBase<AuroraDomainTestModule> 
+    public abstract class AuroraDomainTestBase : AuroraTestBase<AuroraDomainTestModule>
     {
-
     }
 }

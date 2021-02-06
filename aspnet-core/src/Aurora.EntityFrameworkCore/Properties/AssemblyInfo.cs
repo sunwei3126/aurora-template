@@ -1,2 +1,3 @@
 ﻿using System.Runtime.CompilerServices;
-[assembly:InternalsVisibleToAttribute("Aurora.EntityFrameworkCore.Tests")]
+
+[assembly: InternalsVisibleToAttribute("Aurora.EntityFrameworkCore.Tests")]

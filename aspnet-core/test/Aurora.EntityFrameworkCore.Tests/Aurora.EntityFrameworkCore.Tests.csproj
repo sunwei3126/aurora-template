@@ -8,13 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Aurora.EntityFrameworkCore.DbMigrations\Aurora.EntityFrameworkCore.DbMigrations.csproj" />
-    <ProjectReference Include="..\Aurora.TestBase\Aurora.TestBase.csproj" />
     <PackageReference Include="Volo.Abp.EntityFrameworkCore.Sqlite" Version="4.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Aurora.EntityFrameworkCore.DbMigrations\Aurora.EntityFrameworkCore.DbMigrations.csproj" />
+    <ProjectReference Include="..\Aurora.TestBase\Aurora.TestBase.csproj" />
   </ItemGroup>
 
 </Project>

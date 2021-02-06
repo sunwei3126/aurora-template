@@ -4,18 +4,20 @@ using Microsoft.Extensions.Hosting;
 
 namespace Aurora.HttpApi.Client.ConsoleTestApp
 {
-    class Program
+    public class Program
     {
-        static async Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
             await CreateHostBuilder(args).RunConsoleAsync();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureServices((hostContext, services) =>
+        private static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureServices((_, services) =>
                 {
                     services.AddHostedService<ConsoleTestAppHostedService>();
                 });
+        }
     }
 }

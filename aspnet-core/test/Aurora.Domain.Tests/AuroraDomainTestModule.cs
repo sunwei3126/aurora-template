@@ -3,11 +3,8 @@ using Volo.Abp.Modularity;
 
 namespace Aurora
 {
-    [DependsOn(
-        typeof(AuroraEntityFrameworkCoreTestModule)
-        )]
+    [DependsOn(typeof(AuroraEntityFrameworkCoreTestModule))]
     public class AuroraDomainTestModule : AbpModule
     {
-
     }
 }

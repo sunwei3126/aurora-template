@@ -8,12 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Aurora.Application\Aurora.Application.csproj" />
-    <ProjectReference Include="..\Aurora.Domain.Tests\Aurora.Domain.Tests.csproj" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+    <ProjectReference Include="..\..\src\Aurora.Application\Aurora.Application.csproj" />
+    <ProjectReference Include="..\Aurora.Domain.Tests\Aurora.Domain.Tests.csproj" />
   </ItemGroup>
 
 </Project>

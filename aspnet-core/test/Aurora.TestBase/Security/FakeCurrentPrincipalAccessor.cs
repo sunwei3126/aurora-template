@@ -8,12 +8,12 @@ namespace Aurora.Security
     [Dependency(ReplaceServices = true)]
     public class FakeCurrentPrincipalAccessor : ThreadCurrentPrincipalAccessor
     {
+        private ClaimsPrincipal _principal;
+
         protected override ClaimsPrincipal GetClaimsPrincipal()
         {
             return GetPrincipal();
         }
-
-        private ClaimsPrincipal _principal;
 
         private ClaimsPrincipal GetPrincipal()
         {
@@ -23,16 +23,12 @@ namespace Aurora.Security
                 {
                     if (_principal == null)
                     {
-                        _principal = new ClaimsPrincipal(
-                            new ClaimsIdentity(
-                                new List<Claim>
-                                {
-                                    new Claim(AbpClaimTypes.UserId,"2e701e62-0953-4dd3-910b-dc6cc93ccb0d"),
-                                    new Claim(AbpClaimTypes.UserName,"admin"),
-                                    new Claim(AbpClaimTypes.Email,"admin@abp.io")
-                                }
-                            )
-                        );
+                        _principal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
+                        {
+                            new(AbpClaimTypes.UserId, "2e701e62-0953-4dd3-910b-dc6cc93ccb0d"),
+                            new(AbpClaimTypes.UserName, "admin"),
+                            new(AbpClaimTypes.Email, "admin@abp.io")
+                        }));
                     }
                 }
             }

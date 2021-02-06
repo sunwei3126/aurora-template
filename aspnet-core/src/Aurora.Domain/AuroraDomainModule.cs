@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using System.Collections.Generic;
 using Aurora.MultiTenancy;
+using IdentityServer4.Configuration;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.BackgroundJobs;
-using Volo.Abp.Emailing;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
 using Volo.Abp.IdentityServer;
+using Volo.Abp.IdentityServer.AspNetIdentity;
 using Volo.Abp.Modularity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.PermissionManagement.Identity;
@@ -26,8 +26,7 @@ namespace Aurora
         typeof(AbpIdentityServerDomainModule),
         typeof(AbpPermissionManagementDomainIdentityServerModule),
         typeof(AbpSettingManagementDomainModule),
-        typeof(AbpTenantManagementDomainModule),
-        typeof(AbpEmailingModule)
+        typeof(AbpTenantManagementDomainModule)
     )]
     public class AuroraDomainModule : AbpModule
     {
@@ -38,9 +37,17 @@ namespace Aurora
                 options.IsEnabled = MultiTenancyConsts.IsEnabled;
             });
 
-#if DEBUG
-            context.Services.Replace(ServiceDescriptor.Singleton<IEmailSender, NullEmailSender>());
-#endif
+            Configure<IdentityServerOptions>(options =>
+            {
+                options.Endpoints.EnableAuthorizeEndpoint = false;
+                options.Endpoints.EnableEndSessionEndpoint = false;
+                options.Endpoints.EnableCheckSessionEndpoint = false;
+                options.Endpoints.EnableIntrospectionEndpoint = false;
+                options.Endpoints.EnableTokenRevocationEndpoint = false;
+                options.Endpoints.EnableDeviceAuthorizationEndpoint = false;
+            });
+
+            context.Services.RemoveAll(s => s.ImplementationType == typeof(LinkLoginExtensionGrantValidator));
         }
     }
 }
