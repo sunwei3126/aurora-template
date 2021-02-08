@@ -1,6 +1,6 @@
 {
   "name": "aurora",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng s -o",
@@ -31,22 +31,23 @@
     "@angular/platform-browser": "~11.1.2",
     "@angular/platform-browser-dynamic": "~11.1.2",
     "@angular/router": "~11.1.2",
-    "ng-alain": "^11.6.0",
-    "rxjs": "~6.6.0",
-    "tslib": "^2.0.0",
-    "zone.js": "~0.11.3",
-    "screenfull": "^5.1.0",
     "@delon/abc": "^11.6.0",
     "@delon/acl": "^11.6.0",
     "@delon/auth": "^11.6.0",
     "@delon/cache": "^11.6.0",
+    "@delon/chart": "^11.6.0",
     "@delon/form": "^11.6.0",
     "@delon/mock": "^11.6.0",
     "@delon/theme": "^11.6.0",
     "@delon/util": "^11.6.0",
-    "@delon/chart": "^11.6.0",
     "@ngx-translate/core": "^13.0.0",
-    "@ngx-translate/http-loader": "^6.0.0"
+    "@ngx-translate/http-loader": "^6.0.0",
+    "angular-oauth2-oidc": "^10.0.3",
+    "ng-alain": "^11.6.0",
+    "rxjs": "~6.6.0",
+    "screenfull": "^5.1.0",
+    "tslib": "^2.0.0",
+    "zone.js": "~0.11.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1101.4",

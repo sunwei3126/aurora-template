@@ -19,28 +19,14 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 
 import { LayoutBasicComponent } from './basic/basic.component';
-import { HeaderClearStorageComponent } from './basic/widgets/clear-storage.component';
 import { HeaderFullScreenComponent } from './basic/widgets/fullscreen.component';
 import { HeaderI18nComponent } from './basic/widgets/i18n.component';
-import { HeaderSearchComponent } from './basic/widgets/search.component';
 import { HeaderUserComponent } from './basic/widgets/user.component';
 import { LayoutBlankComponent } from './blank/blank.component';
-
-const COMPONENTS = [LayoutBasicComponent, LayoutBlankComponent];
-
-const HEADERCOMPONENTS = [
-  HeaderSearchComponent,
-  HeaderFullScreenComponent,
-  HeaderI18nComponent,
-  HeaderClearStorageComponent,
-  HeaderUserComponent,
-];
-
-// passport
 import { LayoutPassportComponent } from './passport/passport.component';
-const PASSPORT = [
-  LayoutPassportComponent
-];
+
+const LAYOUT_COMPONENTS = [LayoutBlankComponent, LayoutBasicComponent, LayoutPassportComponent];
+const HEADER_COMPONENTS = [HeaderFullScreenComponent, HeaderI18nComponent, HeaderUserComponent];
 
 @NgModule({
   imports: [
@@ -61,9 +47,9 @@ const PASSPORT = [
     NzSpinModule,
     NzBadgeModule,
     NzAvatarModule,
-    NzIconModule,
+    NzIconModule
   ],
-  declarations: [...COMPONENTS, ...HEADERCOMPONENTS, ...PASSPORT],
-  exports: [...COMPONENTS, ...PASSPORT],
+  declarations: [...LAYOUT_COMPONENTS, ...HEADER_COMPONENTS],
+  exports: [...LAYOUT_COMPONENTS]
 })
-export class LayoutModule { }
+export class LayoutModule {}

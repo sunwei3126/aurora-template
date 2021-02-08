@@ -1,16 +1,14 @@
 import { NgModule } from '@angular/core';
-// import { STWidgetRegistry } from '@delon/abc/st';
-import { SharedModule } from '../shared.module';
+import { STWidgetRegistry } from '@delon/abc/st';
+import { SharedModule } from '@shared';
 
-export const STWIDGET_COMPONENTS = [];
+export const ST_WIDGET_COMPONENTS = [];
 
 @NgModule({
-  declarations: STWIDGET_COMPONENTS,
+  declarations: ST_WIDGET_COMPONENTS,
   imports: [SharedModule],
-  exports: [...STWIDGET_COMPONENTS],
+  exports: [...ST_WIDGET_COMPONENTS]
 })
 export class STWidgetModule {
-  // constructor(widgetRegistry: STWidgetRegistry) {
-  //   widgetRegistry.register(STImgWidget.KEY, STImgWidget);
-  // }
+  constructor(widgetRegistry: STWidgetRegistry) {}
 }

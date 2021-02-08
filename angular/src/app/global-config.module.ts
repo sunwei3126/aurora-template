@@ -4,32 +4,39 @@ import { DelonMockModule } from '@delon/mock';
 import { AlainThemeModule } from '@delon/theme';
 import { AlainConfig, ALAIN_CONFIG } from '@delon/util/config';
 
-// Please refer to: https://ng-alain.com/docs/global-config
-// #region NG-ALAIN Config
-
 import { DelonACLModule } from '@delon/acl';
 
 const alainConfig: AlainConfig = {
-  st: { modal: { size: 'lg' } },
-  pageHeader: { homeI18n: 'home' },
-  lodop: {
-    license: `A59B099A586B3851E0F0D7FDBF37B603`,
-    licenseA: `C94CEE276DB2187AE6B65D56B3FC2848`,
+  st: {
+    modal: { size: 'lg' },
+    sortReName: { ascend: 'asc', descend: 'desc' },
+    res: { reName: { list: 'items', total: 'totalCount' } },
+    page: { front: false, showQuickJumper: true, showSize: true },
+    req: { type: 'skip', reName: { skip: 'skipCount', limit: 'maxResultCount' } },
+    multiSort: { global: true, key: 'sorting', nameSeparator: ' ', separator: ',', keepEmptyKey: false }
   },
-  auth: { login_url: '/passport/login' },
+  pageHeader: {
+    home: '首页',
+    syncTitle: true,
+    autoTitle: false,
+    recursiveBreadcrumb: true
+  },
+  auth: {
+    store_key: 'access_token',
+    login_url: '/passport/login',
+    ignores: [/\/.well-known/, /\/connect\/token/, /\/api\/abp\/application-configuration/]
+  }
 };
 
 const alainModules = [AlainThemeModule.forRoot(), DelonACLModule.forRoot(), DelonMockModule.forRoot()];
 const alainProvides = [{ provide: ALAIN_CONFIG, useValue: alainConfig }];
 
-// mock
 import { environment } from '@env/environment';
-import * as MOCKDATA from '../../_mock';
+import * as MOCK_DATA from '../../_mock';
 if (!environment.production) {
-  alainConfig.mock = { data: MOCKDATA };
+  alainConfig.mock = { data: MOCK_DATA };
 }
 
-// #region reuse-tab
 /**
  * 若需要[路由复用](https://ng-alain.com/components/reuse-tab)需要：
  * 1、在 `shared-delon.module.ts` 导入 `ReuseTabModule` 模块
@@ -50,23 +57,14 @@ if (!environment.production) {
 //   deps: [ReuseTabService],
 // } as any);
 
-// #endregion
-
-// #endregion
-
-// Please refer to: https://ng.ant.design/docs/global-config/en#how-to-use
-// #region NG-ZORRO Config
-
 import { NzConfig, NZ_CONFIG } from 'ng-zorro-antd/core/config';
 
 const ngZorroConfig: NzConfig = {};
 
 const zorroProvides = [{ provide: NZ_CONFIG, useValue: ngZorroConfig }];
 
-// #endregion
-
 @NgModule({
-  imports: [...alainModules],
+  imports: [...alainModules]
 })
 export class GlobalConfigModule {
   constructor(@Optional() @SkipSelf() parentModule: GlobalConfigModule) {
@@ -76,7 +74,7 @@ export class GlobalConfigModule {
   static forRoot(): ModuleWithProviders<GlobalConfigModule> {
     return {
       ngModule: GlobalConfigModule,
-      providers: [...alainProvides, ...zorroProvides],
+      providers: [...alainProvides, ...zorroProvides]
     };
   }
 }

@@ -3,15 +3,10 @@ import * as screenfull from 'screenfull';
 
 @Component({
   selector: 'header-fullscreen',
-  template: `
-    <i nz-icon [nzType]="status ? 'fullscreen-exit' : 'fullscreen'"></i>
-    {{ (status ? 'menu.fullscreen.exit' : 'menu.fullscreen') | translate }}
-  `,
+  template: `<i nz-icon [nzType]="status ? 'fullscreen-exit' : 'fullscreen'"></i>`,
   // tslint:disable-next-line: no-host-metadata-property
-  host: {
-    '[class.d-block]': 'true',
-  },
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '[class.d-block]': 'true' },
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderFullScreenComponent {
   status = false;

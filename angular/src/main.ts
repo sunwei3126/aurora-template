@@ -3,8 +3,8 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { preloaderFinished } from '@delon/theme';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
 
+import { environment } from '@env/environment';
 import { AppModule } from './app/app.module';
-import { environment } from './environments/environment';
 
 preloaderFinished();
 
@@ -15,7 +15,7 @@ if (environment.production) {
 platformBrowserDynamic()
   .bootstrapModule(AppModule, {
     defaultEncapsulation: ViewEncapsulation.Emulated,
-    preserveWhitespaces: false,
+    preserveWhitespaces: false
   })
   .then((res) => {
     const win = window as NzSafeAny;

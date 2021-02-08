@@ -1,24 +1,21 @@
-// 请参考：https://ng-alain.com/docs/i18n
 import { Platform } from '@angular/cdk/platform';
 import { registerLocaleData } from '@angular/common';
-import ngEn from '@angular/common/locales/en';
-import ngZh from '@angular/common/locales/zh';
-import ngZhTw from '@angular/common/locales/zh-Hant';
 import { Injectable } from '@angular/core';
-import {
-  AlainI18NService,
-  DelonLocaleService,
-  en_US as delonEnUS,
-  SettingsService,
-  zh_CN as delonZhCn,
-  zh_TW as delonZhTw,
-} from '@delon/theme';
+
+import { AlainI18NService, DelonLocaleService, SettingsService } from '@delon/theme';
 import { TranslateService } from '@ngx-translate/core';
-import { enUS as dfEn, zhCN as dfZhCn, zhTW as dfZhTw } from 'date-fns/locale';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
-import { en_US as zorroEnUS, NzI18nService, zh_CN as zorroZhCN, zh_TW as zorroZhTW } from 'ng-zorro-antd/i18n';
+import { NzI18nService } from 'ng-zorro-antd/i18n';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
+
+import ngEn from '@angular/common/locales/en';
+import ngZhHans from '@angular/common/locales/zh-Hans';
+import ngZhHant from '@angular/common/locales/zh-Hant';
+
+import { en_US as delonEn, zh_CN as delonZhHans, zh_TW as delonZhHant } from '@delon/theme';
+import { enUS as dfEn, zhCN as dfZhHans, zhTW as dfZhHant } from 'date-fns/locale';
+import { en_US as zorroEn, zh_CN as zorroZhHans, zh_TW as zorroZhHant } from 'ng-zorro-antd/i18n';
 
 interface LangData {
   abbr: string;
@@ -29,32 +26,32 @@ interface LangData {
   delon: NzSafeAny;
 }
 
-const DEFAULT = 'zh-CN';
-const LANGS: { [key: string]: LangData } = {
-  'zh-CN': {
+const DEFAULT = 'zh-Hans';
+const LANGUAGES: { [key: string]: LangData } = {
+  'zh-Hans': {
     text: '简体中文',
-    ng: ngZh,
-    zorro: zorroZhCN,
-    date: dfZhCn,
-    delon: delonZhCn,
-    abbr: '🇨🇳',
+    ng: ngZhHans,
+    zorro: zorroZhHans,
+    date: dfZhHans,
+    delon: delonZhHans,
+    abbr: '🇨🇳'
   },
-  'zh-TW': {
+  'zh-Hant': {
     text: '繁体中文',
-    ng: ngZhTw,
-    zorro: zorroZhTW,
-    date: dfZhTw,
-    delon: delonZhTw,
-    abbr: '🇭🇰',
+    ng: ngZhHant,
+    zorro: zorroZhHant,
+    date: dfZhHant,
+    delon: delonZhHant,
+    abbr: '🇭🇰'
   },
-  'en-US': {
+  en: {
     text: 'English',
     ng: ngEn,
-    zorro: zorroEnUS,
+    zorro: zorroEn,
     date: dfEn,
-    delon: delonEnUS,
-    abbr: '🇬🇧',
-  },
+    delon: delonEn,
+    abbr: '🇬🇧'
+  }
 };
 
 @Injectable({ providedIn: 'root' })
@@ -62,8 +59,8 @@ export class I18NService implements AlainI18NService {
   private _default = DEFAULT;
   private change$ = new BehaviorSubject<string | null>(null);
 
-  private _langs = Object.keys(LANGS).map((code) => {
-    const item = LANGS[code];
+  private _languages = Object.keys(LANGUAGES).map((code) => {
+    const item = LANGUAGES[code];
     return { code, text: item.text, abbr: item.abbr };
   });
 
@@ -72,32 +69,25 @@ export class I18NService implements AlainI18NService {
     private nzI18nService: NzI18nService,
     private delonLocaleService: DelonLocaleService,
     private translate: TranslateService,
-    private platform: Platform,
+    private platform: Platform
   ) {
-    // `@ngx-translate/core` 预先知道支持哪些语言
-    const lans = this._langs.map((item) => item.code);
-    translate.addLangs(lans);
+    const languages = this._languages.map((item) => item.code);
+    translate.addLangs(languages);
 
     const defaultLan = this.getDefaultLang();
-    if (lans.includes(defaultLan)) {
-      this._default = defaultLan;
-    }
+    if (languages.includes(defaultLan)) this._default = defaultLan;
 
     this.updateLangData(this._default);
   }
 
   private getDefaultLang(): string {
-    if (!this.platform.isBrowser) {
-      return DEFAULT;
-    }
-    if (this.settings.layout.lang) {
-      return this.settings.layout.lang;
-    }
+    if (!this.platform.isBrowser) return DEFAULT;
+    if (this.settings.layout.lang) return this.settings.layout.lang;
     return (navigator.languages ? navigator.languages[0] : null) || navigator.language;
   }
 
   private updateLangData(lang: string): void {
-    const item = LANGS[lang];
+    const item = LANGUAGES[lang];
     registerLocaleData(item.ng);
     this.nzI18nService.setLocale(item.zorro);
     this.nzI18nService.setDateLocale(item.date);
@@ -116,19 +106,19 @@ export class I18NService implements AlainI18NService {
     this.updateLangData(lang);
     this.translate.use(lang).subscribe(() => this.change$.next(lang));
   }
-  /** 获取语言列表 */
+
   getLangs(): Array<{ code: string; text: string; abbr: string }> {
-    return this._langs;
+    return this._languages;
   }
-  /** 翻译 */
+
   fanyi(key: string, interpolateParams?: {}): any {
     return this.translate.instant(key, interpolateParams);
   }
-  /** 默认语言 */
+
   get defaultLang(): string {
     return this._default;
   }
-  /** 当前语言 */
+
   get currentLang(): string {
     return this.translate.currentLang || this.translate.getDefaultLang() || this._default;
   }

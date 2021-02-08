@@ -1,27 +1,19 @@
-import { NgModule, Type } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { NgModule, Type } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { AlainThemeModule } from '@delon/theme';
 import { DelonACLModule } from '@delon/acl';
 import { DelonFormModule } from '@delon/form';
+import { AlainThemeModule } from '@delon/theme';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { SHARED_DELON_MODULES } from './shared-delon.module';
 import { SHARED_ZORRO_MODULES } from './shared-zorro.module';
 
-// #region third libs
-
-const THIRDMODULES: Type<any>[] = [ ];
-
-// #endregion
-
-// #region your componets & directives
+const THIRD_MODULES: Type<any>[] = [];
 
 const COMPONENTS: Type<any>[] = [];
 const DIRECTIVES: Type<any>[] = [];
-
-// #endregion
 
 @NgModule({
   imports: [
@@ -34,14 +26,9 @@ const DIRECTIVES: Type<any>[] = [];
     DelonFormModule,
     ...SHARED_DELON_MODULES,
     ...SHARED_ZORRO_MODULES,
-    // third libs
-    ...THIRDMODULES
+    ...THIRD_MODULES
   ],
-  declarations: [
-    // your components
-    ...COMPONENTS,
-    ...DIRECTIVES
-  ],
+  declarations: [...COMPONENTS, ...DIRECTIVES],
   exports: [
     CommonModule,
     FormsModule,
@@ -53,11 +40,9 @@ const DIRECTIVES: Type<any>[] = [];
     TranslateModule,
     ...SHARED_DELON_MODULES,
     ...SHARED_ZORRO_MODULES,
-    // third libs
-    ...THIRDMODULES,
-    // your components
+    ...THIRD_MODULES,
     ...COMPONENTS,
     ...DIRECTIVES
   ]
 })
-export class SharedModule { }
+export class SharedModule {}
